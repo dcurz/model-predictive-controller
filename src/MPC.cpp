@@ -52,9 +52,11 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // element vector and there are 10 timesteps. The number of variables is:
   //
   // 4 * 10 + 2 * 9
-  size_t n_vars = 0;
+  // I choose 6 because I think cte and epsi also need to be in state? 
+  size_t n_vars = (N * 6) + (2 * (N-1));
   // TODO: Set the number of constraints
-  size_t n_constraints = 0;
+  //Is this n_constraints actually the number of "model equations" or number of constraints on the actuators? I think it's number of model equations which I think is 6
+  size_t n_constraints = 6;
 
   // Initial value of the independent variables.
   // SHOULD BE 0 besides initial state.
