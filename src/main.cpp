@@ -105,8 +105,8 @@ int main() {
           double throttle_value;
 
           // waypoints converted to vehicle coordinate system
-          VectorXd x_vehicle(n);
-          VectorXd y_vehicle(n);
+          Eigen::VectorXd x_vehicle(n);
+          Eigen::VectorXd y_vehicle(n);
           for(int i = 0; i < n; i++) {
             const double dx = ptsx[i] - px;
             const double dy = ptsy[i] - py;
@@ -149,9 +149,12 @@ int main() {
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
-          for(int i = 0; i<n; i++){
-          	mpc_x_vals.push_back()
-          }
+          
+          //************STILL NEED SOME MAJOR WORK IN HERE****************************************	
+
+          //for(int i = 0; i<n; i++){
+          //	mpc_x_vals.push_back();
+          //}
 
 
           msgJson["mpc_x"] = mpc_x_vals;
