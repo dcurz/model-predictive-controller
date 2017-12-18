@@ -15,6 +15,8 @@ using namespace std;
 #define W_DDELTA 0.01
 #define W_DA 0.00001
 
+#define N 20;
+
 class MPC {
  public:
   MPC();
@@ -26,7 +28,7 @@ class MPC {
   vector<double> Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs);
   vector<double> mpc_x;
   vector<double> mpc_y; 
-  size_t N = 20;
+  size_t numpts = N;
 
 };
 
