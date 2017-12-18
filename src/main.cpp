@@ -127,6 +127,7 @@ int main() {
   		  	// and subtracting y.
           	// But because we're now in the vehicles coordinate system, it's just the intercept of this fit
   		  	double cte = coeffs[0];
+  		  	std::cout<<"CTE: "<<cte<<std::endl;
   		  	// Due to the sign starting at 0, the orientation error is -f'(x).
   		  	// derivative of coeffs[0] + coeffs[1] * x -> coeffs[1]
   		  	double epsi = -atan(coeffs[1]);
@@ -144,12 +145,12 @@ int main() {
           vector<double> mpc_y_vals; //= mpc.mpc_y;
 
           //pull in model predicted trajectory in universe coords
-          for(int i = 0; i<n; i++){
+          for(int i = 0; i<10; i++){
           	mpc_x_vals.push_back(mpc.mpc_x[i]);
           	mpc_y_vals.push_back(mpc.mpc_y[i]);
           }
 
-          for(int i = 0; i < n; i++) {
+          for(int i = 0; i < 10; i++) {
 			const double ddx = mpc_x_vals[i] - px;
             const double ddy = mpc_y_vals[i] - py; 
             mpc_x_vals[i] = ddx * cos(-psi) - ddy * sin(-psi);
