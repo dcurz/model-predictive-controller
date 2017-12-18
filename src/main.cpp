@@ -104,7 +104,7 @@ int main() {
           double steer_value;
           double throttle_value;
 
-          // waypoints converted to vehicle coordinate system
+          // convert waypoints to vehicle coordinate system
           Eigen::VectorXd x_vehicle(n);
           Eigen::VectorXd y_vehicle(n);
           for(int i = 0; i < n; i++) {
@@ -144,8 +144,8 @@ int main() {
           msgJson["throttle"] = throttle_value;
 
           //Display the MPC predicted trajectory 
-          vector<double> mpc_x_vals[n];
-          vector<double> mpc_y_vals[n];
+          vector<double> mpc_x_vals = mpc.projected_x;
+          vector<double> mpc_y_vals = mpc.projected_y;
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
@@ -166,6 +166,11 @@ int main() {
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
+  		  for(int i = 0; i<n; i++){
+            next_x_vals.push_back(x_vehicle[i]);
+            next_y_vals.push_back(y_vehicle[i]);
+          }
+
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
