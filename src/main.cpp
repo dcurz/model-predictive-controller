@@ -104,6 +104,16 @@ int main() {
           double steer_value;
           double throttle_value;
 
+          //create vectors for model predicted trajectory
+          vector<double> mpc_x_vals; //= mpc.mpc_x;
+          vector<double> mpc_y_vals; //= mpc.mpc_y;
+
+          //pull in model predicted trajectory in universe coords
+          for(int i = 0; i<n; i++){
+          	mpc_x_vals.push_back(mpc.mpc_x[i]);
+          	mpc_y_vals.push_back(mpc.mpc_y[i]);
+          }
+
           // convert waypoints to vehicle coordinate system
           Eigen::VectorXd x_vehicle(n);
           Eigen::VectorXd y_vehicle(n);
@@ -112,6 +122,10 @@ int main() {
             const double dy = ptsy[i] - py;
             x_vehicle[i] = dx * cos(-psi) - dy * sin(-psi);
             y_vehicle[i] = dy * cos(-psi) + dx * sin(-psi);
+            const double ddx = mpc_x_vals[i] - px;
+            const double ddy = mpc_y_vals[i] - py; 
+            mpc_x_vals[i] = ddx * cos(-psi) - ddy * sin(-psi);
+            mpc_y_vals[i] = ddy * cos(-psi) + ddx * sin(-psi);
           }
 
           // fit waypoints to 3rd order polynomial
@@ -144,13 +158,12 @@ int main() {
           msgJson["throttle"] = throttle_value;
 
           //Display the MPC predicted trajectory 
-          vector<double> mpc_x_vals; //= mpc.mpc_x;
-          vector<double> mpc_y_vals; //= mpc.mpc_y;
+          
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
-          
-          //************STILL NEED SOME MAJOR WORK IN HERE****************************************	
+          vector<double> mpc_x_vals; //= mpc.mpc_x;
+          vector<double> mpc_y_vals; //= mpc.mpc_y;
 
           for(int i = 0; i<n; i++){
           	mpc_x_vals.push_back(mpc.mpc_x[i]);
