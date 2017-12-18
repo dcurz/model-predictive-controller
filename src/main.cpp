@@ -145,12 +145,12 @@ int main() {
           vector<double> mpc_y_vals; //= mpc.mpc_y;
 
           //pull in model predicted trajectory in universe coords
-          for(int i = 0; i<10; i++){
+          for(int i = 0; i<mpc.N; i++){
           	mpc_x_vals.push_back(mpc.mpc_x[i]);
           	mpc_y_vals.push_back(mpc.mpc_y[i]);
           }
 
-          for(int i = 0; i < 10; i++) {
+          for(int i = 0; i <mpc.N; i++) {
 			const double ddx = mpc_x_vals[i] - px;
             const double ddy = mpc_y_vals[i] - py; 
             mpc_x_vals[i] = ddx * cos(-psi) - ddy * sin(-psi);
