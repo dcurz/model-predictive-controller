@@ -270,8 +270,8 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   auto cost = solution.obj_value;
   std::cout << "Cost " << cost << std::endl;
 
-  std::vector<double> mpc_x;
-  std::vector<double> mpc_y;
+  this-> mpc_x = {};
+  this-> mpc_y = {};
   for (int i = 0; i < N; i++) {
     mpc_x.push_back(solution.x[x_start + i]);
     mpc_y.push_back(solution.x[y_start + i]);
