@@ -7,10 +7,10 @@
 using namespace std;
 
 // Set weights parameters for the cost function
-#define W_CTE 8.4
-#define W_EPSI 0.32
-#define W_V 0.261
-#define W_DELTA 30000
+#define W_CTE 10.0
+#define W_EPSI 0.50
+#define W_V 0.150
+#define W_DELTA 5000
 #define W_A 17.1
 #define W_DDELTA 0.01
 #define W_DA 0.00001
