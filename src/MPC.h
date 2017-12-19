@@ -15,7 +15,7 @@ using namespace std;
 #define W_DDELTA 0.01
 #define W_DA 0.00001
 
-#define N 20
+//#define N 20
 
 class MPC {
  public:
