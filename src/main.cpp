@@ -167,12 +167,12 @@ int main() {
           }
 
           //convert model predicted trajectory to vehicle coords
-          for(int i = 0; i <20; i++) {
-			const double ddx = mpc_x_vals[i] - px;
-            const double ddy = mpc_y_vals[i] - py; 
-            mpc_x_vals[i] = ddx * cos(-psi) - ddy * sin(-psi);
-            mpc_y_vals[i] = ddy * cos(-psi) + ddx * sin(-psi);
-  			}
+          //for(int i = 0; i <20; i++) {
+			//const double ddx = mpc_x_vals[i] - px;
+            //const double ddy = mpc_y_vals[i] - py; 
+            //mpc_x_vals[i] = ddx * cos(-psi) - ddy * sin(-psi);
+            //mpc_y_vals[i] = ddy * cos(-psi) + ddx * sin(-psi);
+  			//}
   			//
 
 
@@ -226,7 +226,7 @@ int main() {
           //
           // NOTE: REMEMBER TO SET THIS TO 100 MILLISECONDS BEFORE
           // SUBMITTING.
-          //this_thread::sleep_for(chrono::milliseconds(100));
+          this_thread::sleep_for(chrono::milliseconds(100));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }
       } else {
