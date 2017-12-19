@@ -92,6 +92,8 @@ int main() {
           double psi = j[1]["psi"];
           double v_mph = j[1]["speed"];
           double v = v_mph * 0.447;
+          double steering_angle = j[1]["steering_angle"];
+          double throttle = j[1]["throttle"];
 
           const int n = ptsx.size(); //number of waypoints - I guess defined by simulator
 
@@ -139,6 +141,7 @@ int main() {
   			//actuators are applied (the latency)
   			const double dt = DT;
           	const double Lf = LF;
+
           	const double px_act = v * dt;
           	const double py_act = 0;
           	const double psi_act = - v * steering_angle * dt / Lf;
