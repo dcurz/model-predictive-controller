@@ -90,7 +90,8 @@ int main() {
           double px = j[1]["x"];
           double py = j[1]["y"];
           double psi = j[1]["psi"];
-          double v = j[1]["speed"];
+          double v_mph = j[1]["speed"];
+          double v = v_mph * 0.447;
 
           const int n = ptsx.size(); //number of waypoints - I guess defined by simulator
 
