@@ -26,7 +26,7 @@ double dt = 0.1;
 const double Lf = 2.67;
 
 // Ideal velocity - anything slower will contribute towards an increased cost value
-double ref_v = 40.0; 
+double ref_v = 20.0; 
 
 // These values store the indeces of where in the single massive data vector each of 
 // the following portions of the state value begin and end
@@ -126,7 +126,7 @@ class FG_eval {
         psides0 += i*coeffs[i] * CppAD::pow(x0, i-1);
       }
       psides0 = CppAD::atan(psides0);
-      
+
       // Recall the equations for the model:
       // x_[t+1] = x[t] + v[t] * cos(psi[t]) * dt
       // y_[t+1] = y[t] + v[t] * sin(psi[t]) * dt
