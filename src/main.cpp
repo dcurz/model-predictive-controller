@@ -134,7 +134,19 @@ int main() {
   		  	double epsi = -atan(coeffs[1]);
 
   			Eigen::VectorXd state(6);
-  			state << px, py, psi, v, cte, epsi;
+
+  			//apply kinematic model to project actual state when 
+  			//actuators are applied (the latency)
+  			const double dt = DT;
+          	const double Lf = LF;
+          	const double px_act = v * dt;
+          	const double py_act = 0;
+          	const double psi_act = - v * steering_angle * dt / Lf;
+          	const double v_act = v + throttle * dt;
+          	const double cte_act = cte + v * sin(epsi) * dt;
+          	const double epsi_act = epsi + psi_act; 
+
+  			state << px_act, py_act, psi_act, v_act, cte_act, epsi_act;
 
   			auto vars = mpc.Solve(state, coeffs);
 
@@ -151,6 +163,7 @@ int main() {
           	mpc_y_vals.push_back(mpc.mpc_y[i]);
           }
 
+          //convert model predicted trajectory to vehicle coords
           for(int i = 0; i <20; i++) {
 			const double ddx = mpc_x_vals[i] - px;
             const double ddy = mpc_y_vals[i] - py; 
