@@ -17,7 +17,7 @@ using namespace std;
 
 #define DT 0.1
 #define LF 2.67
-//#define N 20
+
 
 class MPC {
  public:
@@ -30,7 +30,6 @@ class MPC {
   vector<double> Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs);
   vector<double> mpc_x;
   vector<double> mpc_y; 
-  //size_t numpts = N;
 
 };
 

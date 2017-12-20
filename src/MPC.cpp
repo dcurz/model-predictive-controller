@@ -5,11 +5,7 @@
 
 using CppAD::AD;
 
-// The program borrows some lines of code from
-// https://github.com/udacity/CarND-MPC-Quizzes
-
-// TODO: Set the timestep length and duration
-// DONE - starting with values given in classroom exercise
+//Set the timestep length and duration
 size_t N = 20;
 double dt = 0.1;
 
@@ -25,11 +21,11 @@ double dt = 0.1;
 // This is the length from front to CoG that has a similar radius.
 const double Lf = 2.67;
 
-// Ideal velocity - anything slower will contribute towards an increased cost value
+// Target velocity - anything slower will contribute towards an increased cost value
 double ref_v = 20.0; 
 
 // These values store the indeces of where in the single massive data vector each of 
-// the following portions of the state value begin and end
+// the following portions of the state value begin and end. Just ints for convenience
 size_t x_start = 0;
 size_t y_start = x_start + N;
 size_t psi_start = y_start + N;
@@ -47,10 +43,6 @@ class FG_eval {
 
   typedef CPPAD_TESTVECTOR(AD<double>) ADvector;
   void operator()(ADvector& fg, const ADvector& vars) {
-    // TODO: implement MPC
-    // `fg` a vector of the cost constraints, `vars` is a vector of variable values (state & actuators)
-    // NOTE: You'll probably go back and forth between this function and
-    // the Solver function below.
 
     //*******************************Establish cost for given set of states*******************************
 
@@ -116,6 +108,9 @@ class FG_eval {
       AD<double> delta0 = vars[delta_start + t - 1];
       AD<double> a0 = vars[a_start + t - 1];
 
+      // f0 is required for model equations - it's the evaluation of 
+      // the waypoints polynomial at a given x. Remember x is the
+      // forward/backward direction in teh car's local coords
       AD<double> f0 = 0.0;
       for (int i = 0; i < coeffs.size(); i++){
         f0 += coeffs[i] * CppAD::pow(x0,i);
@@ -135,8 +130,8 @@ class FG_eval {
       // cte[t+1] = f(x[t]) - y[t] + v[t] * sin(epsi[t]) * dt
       // epsi[t+1] = psi[t] - psides[t] + v[t] * delta[t] / Lf * dt
 
-      // Here we return to the fg vector - and establish a definition for each value 
-      // in that vector based on our model. 
+      // These are the model equations - which establish a relationship 
+      // between each state value and the previous state/actuation values
       fg[1 + x_start + t] = x1 - (x0 + v0 * CppAD::cos(psi0) * dt);
       fg[1 + y_start + t] = y1 - (y0 + v0 * CppAD::sin(psi0) * dt);
       fg[1 + psi_start + t] = psi1 - (psi0 + v0 * delta0 / Lf * dt);
@@ -168,16 +163,16 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   double cte = state[4];
   double epsi = state[5];  
 
-  // TODO: Set the number of model variables (includes both states and inputs).
+  // Set the number of model variables (includes both states and inputs).
   // For example: If the state is a 4 element vector, the actuators is a 2
   // element vector and there are 10 timesteps. The number of variables is:
   //
   // 4 * 10 + 2 * 9
-  // But it's 6 not 4 because cte and epsi also need to be in state? Definitely 2 actuators. 
+  // But it's 6 not 4 because cte and epsi also need to be in state. Definitely 2 actuators. 
   size_t n_vars = (N * 6) + (2 * (N-1));
   
-  // TODO: Set the number of constraints
-  //n_constraints is actually the number of "model equations", but there's 6 for each time step
+  //Set the number of constraints
+  //n_constraints is actually the number of "model equations" -there's 6 for each time step
   size_t n_constraints = N*6;
 
   // Initial value of the independent variables.
@@ -284,11 +279,8 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
     mpc_x.push_back(solution.x[x_start + i]);
     mpc_y.push_back(solution.x[y_start + i]);
   }  
-  // TODO: Return the first actuator values. The variables can be accessed with
+  //Return the first actuator values. The variables can be accessed with
   // `solution.x[i]`.
-  //
-  // {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
-  // creates a 2 element double vector.
   return {solution.x[x_start + 1],   solution.x[y_start + 1],
           solution.x[psi_start + 1], solution.x[v_start + 1],
           solution.x[cte_start + 1], solution.x[epsi_start + 1],

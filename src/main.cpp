@@ -9,6 +9,11 @@
 #include "MPC.h"
 #include "json.hpp"
 
+// The program borrows some lines of code from
+// https://github.com/udacity/CarND-MPC-Quizzes
+// and also owes a debt to the structural examples furnished by
+// https://github.com/NikolasEnt
+
 // for convenience
 using json = nlohmann::json;
 
@@ -95,19 +100,10 @@ int main() {
           double steering_angle = j[1]["steering_angle"];
           double throttle = j[1]["throttle"];
 
-          const int n = ptsx.size(); //number of waypoints - I guess defined by simulator
+          const int n = ptsx.size(); //number of waypoints (dynamically defined by simulator)
 
-
-          /*
-          * TODO: Calculate steering angle and throttle using MPC.
-          *
-          * Both are in between [-1, 1].
-          *
-          */
           double steer_value;
           double throttle_value;
-
-
 
           // convert waypoints to vehicle coordinate system
           Eigen::VectorXd x_vehicle(n);
@@ -117,17 +113,12 @@ int main() {
             const double dy = ptsy[i] - py;
             x_vehicle[i] = dx * cos(-psi) - dy * sin(-psi);
             y_vehicle[i] = dy * cos(-psi) + dx * sin(-psi);
-            //const double ddx = mpc_x_vals[i] - px;
-            //const double ddy = mpc_y_vals[i] - py; 
-            //mpc_x_vals[i] = ddx * cos(-psi) - ddy * sin(-psi);
-            //mpc_y_vals[i] = ddy * cos(-psi) + ddx * sin(-psi);
           }
 
           // fit waypoints to 3rd order polynomial
           auto coeffs = polyfit(x_vehicle, y_vehicle, 3); 
 
-          	// The cross track error is calculated by evaluating at polynomial at x, f(x)
-  		  	// and subtracting y.
+          	// The cross track error is calculated by evaluating at polynomial at x, f(x) and subtracting y.
           	// But because we're now in the vehicles coordinate system, it's just the intercept of this fit
   		  	double cte = coeffs[0];
   		  	std::cout<<"CTE: "<<cte<<std::endl;
@@ -138,21 +129,23 @@ int main() {
   			Eigen::VectorXd state(6);
 
   			//apply kinematic model to project actual state when 
-  			//actuators are applied (the latency)
+  			//actuators are applied (the latency) The state is also 
+  			//converted into vehicle coordinates at this stage
   			const double dt = DT;
           	const double Lf = LF;
 
-          	const double px_act = v * dt;
-          	const double py_act = 0;
-          	const double psi_act = - v * steering_angle * dt / Lf;
-          	const double v_act = v + throttle * dt;
-          	const double cte_act = cte + v * sin(epsi) * dt;
-          	const double epsi_act = epsi + psi_act; 
+          	const double px_stepforward = v * dt;
+          	const double py_stepforward = 0;
+          	const double psi_stepforward = - v * steering_angle * dt / Lf;
+          	const double v_stepforward = v + throttle * dt;
+          	const double cte_stepforward = cte + v * sin(epsi) * dt;
+          	const double epsi_stepforward = epsi + psi_stepforward; 
 
-  			state << px_act, py_act, psi_act, v_act, cte_act, epsi_act;
+          	//Assemble local coordinate frame stepped-forward state vector to feed to optimizer
+  			state << px_stepforward, py_stepforward, psi_stepforward, v_stepforward, cte_stepforward, epsi_stepforward;
 
+  			//Call optimizer to perform MPC and get 1st steer and throttle actuations
   			auto vars = mpc.Solve(state, coeffs);
-
   			steer_value = vars[6];
   			throttle_value = vars[7];
           
@@ -160,20 +153,11 @@ int main() {
           vector<double> mpc_x_vals; //= mpc.mpc_x;
           vector<double> mpc_y_vals; //= mpc.mpc_y;
 
-          //pull in model predicted trajectory in universe coords
+          //pull in model predicted trajectory for display
           for(int i = 0; i<20; i++){
           	mpc_x_vals.push_back(mpc.mpc_x[i]);
           	mpc_y_vals.push_back(mpc.mpc_y[i]);
           }
-
-          //convert model predicted trajectory to vehicle coords
-          //for(int i = 0; i <20; i++) {
-			//const double ddx = mpc_x_vals[i] - px;
-            //const double ddy = mpc_y_vals[i] - py; 
-            //mpc_x_vals[i] = ddx * cos(-psi) - ddy * sin(-psi);
-            //mpc_y_vals[i] = ddy * cos(-psi) + ddx * sin(-psi);
-  			//}
-  			//
 
 
           json msgJson;
@@ -182,24 +166,11 @@ int main() {
           msgJson["steering_angle"] = -steer_value/deg2rad(25);
           msgJson["throttle"] = throttle_value;
 
-          //Display the MPC predicted trajectory 
-          
-
-          //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
-          // the points in the simulator are connected by a Green line
-          //vector<double> mpc_x_vals; //= mpc.mpc_x;
-          //vector<double> mpc_y_vals; //= mpc.mpc_y;
-
-          //for(int i = 0; i<n; i++){
-          	//mpc_x_vals.push_back(mpc.mpc_x[i]);
-          	//mpc_y_vals.push_back(mpc.mpc_y[i]);
-          //}
-
-
+          //Display the (previously pulled in) MPC predicted trajectory 
           msgJson["mpc_x"] = mpc_x_vals;
           msgJson["mpc_y"] = mpc_y_vals;
 
-          //Display the waypoints/reference line
+          //Pull in and display the waypoints/reference line
           vector<double> next_x_vals;
           vector<double> next_y_vals;
 
@@ -209,7 +180,6 @@ int main() {
             next_x_vals.push_back(x_vehicle[i]);
             next_y_vals.push_back(y_vehicle[i]);
           }
-
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
