@@ -173,7 +173,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   
   //Set the number of constraints
   //n_constraints is actually the number of "model equations" -there's 6 for each time step
-  size_t n_constraints = N*6;
+  int n_constraints = N*6;
 
   // Initial value of the independent variables.
   // SHOULD BE 0 besides initial state.
