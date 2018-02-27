@@ -6,7 +6,7 @@
 using CppAD::AD;
 
 //Set the timestep length and duration
-size_t N = 20;
+int N = 20;
 double dt = 0.1;
 
 // This value assumes the model presented in the classroom is used.
@@ -26,14 +26,14 @@ double ref_v = 20.0;
 
 // These values store the indeces of where in the single massive data vector each of 
 // the following portions of the state value begin and end. Just ints for convenience
-size_t x_start = 0;
-size_t y_start = x_start + N;
-size_t psi_start = y_start + N;
-size_t v_start = psi_start + N;
-size_t cte_start = v_start + N;
-size_t epsi_start = cte_start + N;
-size_t delta_start = epsi_start + N;
-size_t a_start = delta_start + N - 1;
+int x_start = 0;
+int y_start = x_start + N;
+int psi_start = y_start + N;
+int v_start = psi_start + N;
+int cte_start = v_start + N;
+int epsi_start = cte_start + N;
+int delta_start = epsi_start + N;
+int a_start = delta_start + N - 1;
 
 class FG_eval {
  public:
@@ -152,7 +152,7 @@ MPC::~MPC() {}
 
 vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   bool ok = true;
-  size_t i;
+  //size_t i;
   typedef CPPAD_TESTVECTOR(double) Dvector;
 
   // Unpack incoming state vector for readability
@@ -169,7 +169,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   //
   // 4 * 10 + 2 * 9
   // But it's 6 not 4 because cte and epsi also need to be in state. Definitely 2 actuators. 
-  size_t n_vars = (N * 6) + (2 * (N-1));
+  int n_vars = (N * 6) + (2 * (N-1));
   
   //Set the number of constraints
   //n_constraints is actually the number of "model equations" -there's 6 for each time step
@@ -270,7 +270,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   ok &= solution.status == CppAD::ipopt::solve_result<Dvector>::success;
 
   // Cost
-  auto cost = solution.obj_value;
+  //auto cost = solution.obj_value;
   //std::cout << "Cost " << cost << std::endl;
 
   this-> mpc_x = {};
